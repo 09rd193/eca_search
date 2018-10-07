@@ -1,5 +1,5 @@
 # coding: utf-8
-import csv
+import math
 
 def onestep(line):
   newline = ''
@@ -18,8 +18,18 @@ def onestep(line):
     newline += '0' if x == z else '1'
   return newline
 
+def inititem(target):
+  digit = int(math.log2(target))
+  intitem = 2 ** digit
+  stritem = format(intitem, 'b')
+  _stritem = '1'
+  while len(_stritem) <= len(stritem):
+    _stritem = _stritem + '0' * len(_stritem)
+  stritem = _stritem[:int(-len(_stritem) / 2)]
+  return stritem
+
 def serch(target):
-  item, tmp = '1', ''
+  item, tmp = inititem(target), ''
   integer = int(item, 2)
   while True:
     if target == integer:
@@ -33,13 +43,19 @@ def serch(target):
     integer = int(item, 2)
   return item
 
+def gethexdata(datapath):
+  data = ''
+  with open(datapath, mode='rb') as f:
+    data = f.read().hex()
+  return data
+
 def main():
   # targetよりも小さい値をECA上から探す
-  target = 1234567890
+  hexdata = gethexdata('./lenna.png')
+  target = int(hexdata, 16)
   while 0 < target:
     result = serch(target)
-    print('''rest: %d = %s - %s''' % (target - int(result, 2), target, int(result, 2)))
+    print(len(result), 'step')
     target = target - int(result, 2)
-
 if __name__ == '__main__':
   main()
